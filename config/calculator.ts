@@ -110,14 +110,20 @@ export const ageGroups = [
 ] as const satisfies readonly AgeGroup[];
 
 export const materialColors = [
-  { id: "white", label: "Белый" },
-  { id: "gray-melange", label: "Серый меланж" },
-  { id: "black", label: "Чёрный" },
-  { id: "red", label: "Красный" },
-  { id: "blue", label: "Синий" },
-  { id: "green", label: "Зелёный" },
-  { id: "yellow", label: "Жёлтый" },
+  { id: "white", label: "Белый", swatch: "#f7f7f4" },
+  { id: "gray-melange", label: "Серый меланж", swatch: "#a9aaa7" },
+  { id: "black", label: "Чёрный", swatch: "#202020" },
+  { id: "red", label: "Красный", swatch: "#b8473d" },
+  { id: "blue", label: "Синий", swatch: "#315c83" },
+  { id: "green", label: "Зелёный", swatch: "#55745a" },
+  { id: "yellow", label: "Жёлтый", swatch: "#e6c44b" },
 ] as const satisfies readonly MaterialColor[];
+
+/** Temporary destinations to replace when the brand accounts are available. */
+export const messengerUrls = {
+  telegram: "https://t.me/example",
+  max: "https://max.ru/u/example",
+} as const;
 
 export const embroideryPlacements = [
   { id: "chest", label: "Грудь" },

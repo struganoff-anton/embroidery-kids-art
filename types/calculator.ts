@@ -75,6 +75,7 @@ export interface Size {
 export interface MaterialColor {
   id: ColorId;
   label: string;
+  swatch: string;
 }
 
 export interface EmbroideryPlacement {
