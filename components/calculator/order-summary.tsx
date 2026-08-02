@@ -23,12 +23,12 @@ export function OrderSummary({ selection, compact = false }: { selection: Calcul
     ["Упаковка", labelOf(packagingOptions, selection.packaging)],
   ].filter((row): row is [string, string] => Boolean(row[1]));
   const total = getCurrentPrice(selection);
-  if (compact) return <div><span className="block text-xs text-stone-500">Предварительно</span><strong className="text-lg">{total ? formatPrice(total) : "—"}</strong></div>;
+  if (compact) return <div><span className="block text-xs text-muted">Предварительно</span><strong className="text-lg font-semibold text-foreground">{total ? formatPrice(total) : "—"}</strong></div>;
   return (
-    <aside className="rounded-3xl border border-stone-200 bg-white p-6" aria-label="Текущий заказ">
-      <p className="text-sm font-semibold uppercase tracking-wider text-stone-500">Ваш выбор</p>
-      {rows.length ? <dl className="mt-5 space-y-3">{rows.map(([label, value]) => <div key={label} className="flex justify-between gap-4 text-sm"><dt className="text-stone-500">{label}</dt><dd className="text-right font-medium">{value}</dd></div>)}</dl> : <p className="mt-5 text-sm leading-6 text-stone-500">Выбранные параметры появятся здесь.</p>}
-      <div className="mt-6 border-t border-stone-200 pt-5"><span className="text-sm text-stone-500">Предварительная стоимость</span><strong className="mt-1 block text-2xl">{total ? formatPrice(total) : "—"}</strong></div>
+    <aside className="rounded-container border border-line bg-surface p-6 shadow-surface" aria-label="Текущий заказ">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Ваш выбор</p>
+      {rows.length ? <dl className="mt-5 space-y-3">{rows.map(([label, value]) => <div key={label} className="flex justify-between gap-4 text-sm"><dt className="text-muted">{label}</dt><dd className="text-right font-medium text-foreground">{value}</dd></div>)}</dl> : <p className="mt-5 text-sm leading-6 text-muted">Выбранные параметры появятся здесь.</p>}
+      <div className="mt-6 border-t border-line pt-5"><span className="text-sm text-muted">Предварительная стоимость</span><strong className="mt-1 block text-2xl font-semibold text-foreground">{total ? formatPrice(total) : "—"}</strong></div>
     </aside>
   );
 }
