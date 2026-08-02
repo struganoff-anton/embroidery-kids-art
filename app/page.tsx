@@ -1,19 +1,24 @@
 import { Calculator } from "@/components/calculator/calculator";
+import { Hero } from "@/components/site/hero";
+import { HowItWorks } from "@/components/site/how-it-works";
+import { SiteHeader } from "@/components/site/site-header";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-background px-2.5 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-5 text-foreground min-[360px]:px-4 sm:px-6 sm:pb-16 sm:pt-14">
-      <header className="relative mx-auto mb-5 max-w-7xl sm:mb-9">
-        <span aria-hidden="true" className="absolute -right-1 -top-2 hidden rotate-12 text-2xl font-medium text-accent sm:block">✦</span>
-        <h1 className="max-w-3xl text-[clamp(1.5rem,7vw,3rem)] font-semibold leading-[1.12] tracking-tight sm:text-5xl">
-          Создайте изделие с рисунком ребёнка
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted sm:mt-4 sm:text-lg">
-          Выберите параметры и узнайте предварительную стоимость.
-        </p>
-        <span aria-hidden="true" className="mt-3 block h-0.5 w-12 -rotate-2 rounded-full bg-accent-secondary sm:w-16" />
-      </header>
-      <Calculator />
-    </main>
+    <>
+      <SiteHeader />
+      <main className="min-h-screen overflow-hidden bg-background text-foreground">
+        <Hero />
+        <HowItWorks />
+        <section id="calculator" className="scroll-mt-20 px-2.5 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-12 min-[360px]:px-4 sm:px-6 sm:pb-20 sm:pt-20">
+          <header className="mx-auto mb-6 max-w-6xl sm:mb-9">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Ваше изделие</p>
+            <h2 className="mt-3 text-[clamp(1.75rem,7vw,3.5rem)] font-semibold leading-tight tracking-tight">Рассчитайте стоимость</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-lg sm:leading-8">Выберите изделие и параметры вышивки. Рисунок вы отправите после расчёта в Telegram или MAX.</p>
+          </header>
+          <Calculator />
+        </section>
+      </main>
+    </>
   );
 }
