@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import { ageGroups, embroideryPlacements, embroiderySizes, materialColors, materialProfiles, messengerUrls, packagingOptions, products, qualityLevels, sizes, threadColorSurchargeOptions } from "@/config/calculator";
 import { calculateTotalPreliminaryPrice, getAllowedEmbroiderySizes, getAllowedPlacements, validateCalculatorSelection } from "@/lib/calculator";
@@ -17,6 +18,12 @@ const questions = [
   ["Выберите размер рисунка", "Пропорции зависят от формы исходного рисунка."], ["Сколько цветов в рисунке?", "Если сомневаетесь, выберите «Не знаю»."],
   ["Как упаковать заказ?", "Базовая упаковка уже входит в стоимость."],
 ] as const;
+const productImageSources: Record<ProductTypeId, string> = {
+  "t-shirt": "/images/products/tshirt.jpg",
+  sweatshirt: "/images/products/sweatshirt.png",
+  hoodie: "/images/products/hoodie.png",
+  "zip-hoodie": "/images/products/zip-hoodie.png",
+};
 
 const generateOrderNumber = () => `EMB-${Math.floor(1000 + Math.random() * 9000)}`;
 const complete = (selection: CalculatorSelectionState): selection is CompleteCalculatorSelection => validateCalculatorSelection(selection).isCompatible;
@@ -101,7 +108,7 @@ function Navigation({ step, canContinue, onBack, onContinue }: { step: number; c
 interface StepProps { step: number; selection: CalculatorSelectionState; patch: (value: Partial<CalculatorSelectionState>) => void; selectProduct: (value: ProductTypeId) => void; selectAgeGroup: (value: AgeGroupId) => void; selectPlacement: (value: EmbroideryPlacementId) => void }
 function Step({ step, selection, patch, selectProduct, selectAgeGroup, selectPlacement }: StepProps) {
   const grid = "grid gap-3 sm:grid-cols-2";
-  if (step === 0) return <div className={grid}>{products.map((item) => <OptionCard key={item.id} title={item.label} selected={selection.productType === item.id} onSelect={() => selectProduct(item.id)} meta={`от ${formatPrice(Math.min(...Object.values(item.prices).flatMap(Object.values)))}`} visual={<Placeholder label={item.label} />} />)}</div>;
+  if (step === 0) return <div className={grid}>{products.map((item) => <OptionCard key={item.id} title={item.label} selected={selection.productType === item.id} onSelect={() => selectProduct(item.id)} meta={`от ${formatPrice(Math.min(...Object.values(item.prices).flatMap(Object.values)))}`} visual={<ProductVisual productType={item.id} label={item.label} />} />)}</div>;
   if (step === 1) return <div className={grid}>{ageGroups.map((item) => <OptionCard key={item.id} title={item.label} description={item.id === "child" ? "Размеры 98–104 — 146–156" : "Размеры XS — XXL"} selected={selection.ageGroup === item.id} onSelect={() => selectAgeGroup(item.id)} />)}</div>;
   if (step === 2) return <div className={grid}>{qualityLevels.map((item) => { const material = materialProfiles.find((profile) => profile.qualityLevel === item.id && selection.productType && (profile.productTypes as readonly ProductTypeId[]).includes(selection.productType)); const product = products.find((value) => value.id === selection.productType); const price = product && selection.ageGroup ? product.prices[selection.ageGroup][item.id] : null; return <OptionCard key={item.id} title={item.label} description={material ? `${material.fabric} · ${material.density} · ${material.composition}` : undefined} meta={price ? formatPrice(price) : undefined} selected={selection.qualityLevel === item.id} onSelect={() => patch({ qualityLevel: item.id })} />; })}</div>;
   if (step === 3) return <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{sizes.filter((item) => item.ageGroup === selection.ageGroup).map((item) => <OptionCard key={item.id} title={item.label} description={"approximateAge" in item ? item.approximateAge : undefined} selected={selection.size === item.id} onSelect={() => patch({ size: item.id })} />)}</div>;
@@ -113,6 +120,10 @@ function Step({ step, selection, patch, selectProduct, selectAgeGroup, selectPla
 }
 
 function Placeholder({ label, small = false }: { label: string; small?: boolean }) { return <span aria-hidden="true" className={`flex w-full items-center justify-center rounded-small border border-dashed border-line bg-background text-xs text-muted ${small ? "h-14 sm:h-16" : "h-20 sm:h-24"}`}>{label}</span>; }
+
+function ProductVisual({ productType, label }: { productType: ProductTypeId; label: string }) {
+  return <span className="relative mx-auto flex aspect-[4/5] w-full max-w-60 items-center justify-center overflow-hidden rounded-small border border-line bg-background p-3"><Image src={productImageSources[productType]} alt={`${label}, вид изделия`} fill sizes="240px" className="object-contain p-3" /></span>;
+}
 
 interface SummaryProps { selection: CompleteCalculatorSelection; orderNumber: string; price: ReturnType<typeof calculateTotalPreliminaryPrice>; message: string; copyStatus: "idle" | "copied" | "error"; onCopy: () => void; onBack: () => void }
 function Summary({ selection, orderNumber, price, message, copyStatus, onCopy, onBack }: SummaryProps) {
