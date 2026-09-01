@@ -3,6 +3,7 @@ import {
   compatibilityRules,
   embroiderySizes,
   materialColors,
+  multiEmbroideryPricing,
   packagingOptions,
   products,
   qualityLevels,
@@ -12,6 +13,7 @@ import {
 import type {
   AgeGroupId,
   CalculatorSelectionState,
+  CompleteMultiCalculatorSelection,
   CompleteCalculatorSelection,
   EmbroideryPlacementId,
   EmbroiderySizeId,
@@ -40,6 +42,12 @@ export function calculateBaseProductPrice(
 /** Returns the fixed embroidery surcharge for a selected format. */
 export function calculateEmbroideryPrice(embroiderySize: EmbroiderySizeId): number {
   return findById(embroiderySizes, embroiderySize).price;
+}
+
+/** Prices multiple A6 embroideries by their selected-zone count. */
+export function calculateMultiEmbroideryPrice(zoneCount: number): number {
+  if (zoneCount <= 0) return 0;
+  return multiEmbroideryPricing.first + Math.max(0, zoneCount - 1) * multiEmbroideryPricing.additional;
 }
 
 /** Returns the surcharge used in the preliminary calculation. */
@@ -74,6 +82,25 @@ export function calculateTotalPreliminaryPrice(
     total: baseProduct + embroidery + threadColorSurcharge + packaging,
     isPreliminary: threadOption.isPreliminary,
     isFromPrice: threadOption.requiresIndividualCalculation,
+  };
+}
+
+/** Calculates a multi-embroidery order without a thread-color surcharge. */
+export function calculateMultiTotalPreliminaryPrice(
+  selection: CompleteMultiCalculatorSelection,
+): PreliminaryPrice {
+  const baseProduct = calculateBaseProductPrice(selection.productType, selection.ageGroup, selection.qualityLevel);
+  const embroidery = calculateMultiEmbroideryPrice(selection.multiZoneIds.length);
+  const packaging = calculatePackagingPrice(selection.packaging);
+
+  return {
+    baseProduct,
+    embroidery,
+    threadColorSurcharge: 0,
+    packaging,
+    total: baseProduct + embroidery + packaging,
+    isPreliminary: true,
+    isFromPrice: false,
   };
 }
 

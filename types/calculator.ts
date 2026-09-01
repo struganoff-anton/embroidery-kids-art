@@ -36,6 +36,47 @@ export type EmbroideryPlacementId =
   | "back"
   | "sleeve";
 
+/** Selects the current single- or multi-embroidery calculator branch. */
+export type EmbroideryMode = "single" | "multi";
+export type MultiGarmentView = "front" | "back";
+export type MultiZoneId =
+  | "front-body-1"
+  | "front-body-2"
+  | "front-body-3"
+  | "front-body-4"
+  | "front-body-5"
+  | "front-pocket-1"
+  | "front-left-body-1"
+  | "front-left-body-2"
+  | "front-left-body-3"
+  | "front-right-body-1"
+  | "front-right-body-2"
+  | "front-right-body-3"
+  | "front-left-sleeve-1"
+  | "front-left-sleeve-2"
+  | "front-right-sleeve-1"
+  | "front-right-sleeve-2"
+  | "back-body-1"
+  | "back-body-2"
+  | "back-body-3"
+  | "back-body-4"
+  | "back-body-5";
+
+export interface MultiEmbroiderySelectionState {
+  mode: EmbroideryMode | null;
+  zoneIds: readonly MultiZoneId[];
+}
+
+export interface CompleteMultiCalculatorSelection {
+  productType: ProductTypeId;
+  ageGroup: AgeGroupId;
+  qualityLevel: QualityLevelId;
+  size: SizeId;
+  color: ColorId;
+  packaging: PackagingOptionId;
+  multiZoneIds: readonly MultiZoneId[];
+}
+
 export type EmbroiderySizeId = "A6" | "A5" | "A4";
 export type ThreadColorOptionId = "one" | "two-three" | "four-six" | "seven-plus" | "unknown";
 export type PackagingOptionId = "basic" | "gift";

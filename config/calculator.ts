@@ -139,6 +139,11 @@ export const embroiderySizes = [
   { id: "A4", label: "A4", dimensionsCm: "21 × 30 см", price: 6_000 },
 ] as const satisfies readonly EmbroiderySize[];
 
+export const multiEmbroideryPricing = {
+  first: 2_000,
+  additional: 1_700,
+} as const;
+
 export const threadColorSurchargeOptions = [
   { id: "one", label: "1 цвет", surcharge: 0, isPreliminary: false, requiresIndividualCalculation: false },
   { id: "two-three", label: "2–3 цвета", surcharge: 390, isPreliminary: false, requiresIndividualCalculation: false },
@@ -149,7 +154,7 @@ export const threadColorSurchargeOptions = [
 
 export const packagingOptions = [
   { id: "basic", label: "Базовая упаковка", price: 0, description: "Zip-пакет, входит в стоимость" },
-  { id: "gift", label: "Подарочная упаковка", price: 790, description: "Подарочная упаковка" },
+  { id: "gift", label: "Подарочная упаковка", price: 790, description: "Крафтовая коробка с лентой" },
 ] as const satisfies readonly PackagingOption[];
 
 const standardPlacements = ["chest", "back", "sleeve"] as const;

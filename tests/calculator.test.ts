@@ -4,6 +4,7 @@ import { describe, test } from "node:test";
 import {
   calculateBaseProductPrice,
   calculateEmbroideryPrice,
+  calculateMultiEmbroideryPrice,
   calculatePackagingPrice,
   calculateThreadColorSurcharge,
   calculateTotalPreliminaryPrice,
@@ -11,6 +12,7 @@ import {
   getAllowedPlacements,
   validateCalculatorSelection,
 } from "../lib/calculator.ts";
+import { multiPlacementConfigs } from "../config/multi-embroidery.ts";
 import type {
   CalculatorSelectionState,
   CompleteCalculatorSelection,
@@ -85,6 +87,29 @@ describe("calculator surcharges", () => {
 
   test("basic packaging", () => assert.equal(calculatePackagingPrice("basic"), 0));
   test("gift packaging", () => assert.equal(calculatePackagingPrice("gift"), 790));
+});
+
+describe("multi-embroidery pricing", () => {
+  test("one zone", () => assert.equal(calculateMultiEmbroideryPrice(1), 2_000));
+  test("two zones", () => assert.equal(calculateMultiEmbroideryPrice(2), 3_700));
+  test("three zones", () => assert.equal(calculateMultiEmbroideryPrice(3), 5_400));
+  test("five zones", () => assert.equal(calculateMultiEmbroideryPrice(5), 8_800));
+});
+
+describe("sweatshirt multi-placement configuration", () => {
+  const zones = multiPlacementConfigs.sweatshirt?.zones ?? [];
+
+  test("has nine front zones", () => assert.equal(zones.filter(({ view }) => view === "front").length, 9));
+  test("has five back zones", () => assert.equal(zones.filter(({ view }) => view === "back").length, 5));
+  test("has no pocket zone", () => assert.equal(zones.some(({ id }) => id === "front-pocket-1"), false));
+});
+
+describe("zip hoodie multi-placement configuration", () => {
+  const zones = multiPlacementConfigs["zip-hoodie"]?.zones ?? [];
+
+  test("has ten front zones", () => assert.equal(zones.filter(({ view }) => view === "front").length, 10));
+  test("has five back zones", () => assert.equal(zones.filter(({ view }) => view === "back").length, 5));
+  test("has no center-front zone", () => assert.equal(zones.some(({ id }) => id.startsWith("front-body")), false));
 });
 
 describe("PROJECT_SPEC.md total examples", () => {
