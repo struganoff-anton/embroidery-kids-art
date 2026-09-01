@@ -43,7 +43,7 @@ function HeroComposition() {
           className="h-full w-full object-cover object-[50%_44%]"
         />
       </VisualCard>
-      <VisualCard title="Макет со стежками" className="lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:ml-6 lg:w-[calc(100%-1.5rem)]" label="Подготовка макета рисунка для вышивки">
+      <VisualCard title="Отрисовка макета в программе" className="lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:ml-6 lg:w-[calc(100%-1.5rem)]" label="Подготовка макета рисунка для вышивки">
         <Image
           src="/images/stitch-preview.jpg"
           alt="Подготовка детского рисунка к машинной вышивке на планшете"

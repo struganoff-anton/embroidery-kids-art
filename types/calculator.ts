@@ -10,14 +10,11 @@ export type QualityLevelId = "standard" | "premium";
 
 export type ChildSizeId =
   | "98-104"
-  | "104-110"
   | "110-122"
-  | "122-134"
   | "134-140"
-  | "140-146"
   | "146-156";
 
-export type AdultSizeId = "XS" | "S" | "M" | "L" | "XL" | "XXL";
+export type AdultSizeId = "S" | "M" | "L" | "XL";
 export type SizeId = ChildSizeId | AdultSizeId;
 
 export type ColorId =
@@ -101,9 +98,7 @@ export interface QualityLevel {
 export interface MaterialProfile {
   productTypes: readonly ProductTypeId[];
   qualityLevel: QualityLevelId;
-  fabric: string;
-  density: string;
-  composition: string;
+  description: string;
 }
 
 export interface Size {

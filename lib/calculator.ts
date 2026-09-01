@@ -47,7 +47,7 @@ export function calculateEmbroideryPrice(embroiderySize: EmbroiderySizeId): numb
 /** Prices multiple A6 embroideries by their selected-zone count. */
 export function calculateMultiEmbroideryPrice(zoneCount: number): number {
   if (zoneCount <= 0) return 0;
-  return multiEmbroideryPricing.first + Math.max(0, zoneCount - 1) * multiEmbroideryPricing.additional;
+  return zoneCount * multiEmbroideryPricing.perZone;
 }
 
 /** Returns the surcharge used in the preliminary calculation. */

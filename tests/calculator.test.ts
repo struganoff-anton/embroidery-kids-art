@@ -5,6 +5,7 @@ import {
   calculateBaseProductPrice,
   calculateEmbroideryPrice,
   calculateMultiEmbroideryPrice,
+  calculateMultiTotalPreliminaryPrice,
   calculatePackagingPrice,
   calculateThreadColorSurcharge,
   calculateTotalPreliminaryPrice,
@@ -12,10 +13,12 @@ import {
   getAllowedPlacements,
   validateCalculatorSelection,
 } from "../lib/calculator.ts";
+import { ageGroups, materialProfiles, sizes } from "../config/calculator.ts";
 import { multiPlacementConfigs } from "../config/multi-embroidery.ts";
 import type {
   CalculatorSelectionState,
   CompleteCalculatorSelection,
+  CompleteMultiCalculatorSelection,
   EmbroideryPlacementId,
   EmbroiderySizeId,
   ProductTypeId,
@@ -38,16 +41,16 @@ const validAdultSelection: CompleteCalculatorSelection = {
 describe("base product prices", () => {
   const expectedPrices = {
     adult: {
-      "t-shirt": { standard: 2_490, premium: 2_990 },
-      sweatshirt: { standard: 3_690, premium: 4_490 },
-      hoodie: { standard: 6_650, premium: 7_450 },
-      "zip-hoodie": { standard: 7_490, premium: 8_290 },
+      "t-shirt": { standard: 1_990, premium: 2_990 },
+      sweatshirt: { standard: 1_990, premium: 3_690 },
+      hoodie: { standard: 3_990, premium: 5_900 },
+      "zip-hoodie": { standard: 4_690, premium: 6_590 },
     },
     child: {
-      "t-shirt": { standard: 1_990, premium: 2_390 },
-      sweatshirt: { standard: 2_990, premium: 3_690 },
-      hoodie: { standard: 4_990, premium: 5_590 },
-      "zip-hoodie": { standard: 5_690, premium: 6_290 },
+      "t-shirt": { standard: 1_190, premium: 2_190 },
+      sweatshirt: { standard: 1_290, premium: 2_990 },
+      hoodie: { standard: 3_290, premium: 5_200 },
+      "zip-hoodie": { standard: 3_690, premium: 5_490 },
     },
   } as const;
 
@@ -65,8 +68,36 @@ describe("base product prices", () => {
   }
 });
 
+describe("size options", () => {
+  test("kids have exactly the agreed sizes", () => {
+    assert.deepEqual(sizes.filter(({ ageGroup }) => ageGroup === "child").map(({ label }) => label), ["98–104", "110–122", "134–140", "146–156"]);
+    assert.deepEqual(ageGroups.find(({ id }) => id === "child")?.sizes, ["98-104", "110-122", "134-140", "146-156"]);
+  });
+
+  test("adults have exactly the agreed sizes", () => {
+    assert.deepEqual(sizes.filter(({ ageGroup }) => ageGroup === "adult").map(({ label }) => label), ["S", "M", "L", "XL"]);
+    assert.deepEqual(ageGroups.find(({ id }) => id === "adult")?.sizes, ["S", "M", "L", "XL"]);
+  });
+});
+
+describe("material descriptions", () => {
+  const description = (productType: ProductTypeId, qualityLevel: QualityLevelId) => materialProfiles.find((profile) => profile.qualityLevel === qualityLevel && (profile.productTypes as readonly ProductTypeId[]).includes(productType))?.description;
+
+  test("sweatshirt descriptions", () => {
+    assert.equal(description("sweatshirt", "standard"), "Футер 2-х нитка");
+    assert.equal(description("sweatshirt", "premium"), "Футер пенье 3-х нитка, 330–370 г/м²");
+  });
+
+  test("hoodie and zip hoodie descriptions", () => {
+    for (const product of ["hoodie", "zip-hoodie"] as const) {
+      assert.equal(description(product, "standard"), "Футер 3-х нитка пенье, 330–370 г/м²");
+      assert.equal(description(product, "premium"), "Футер 3-х нитка экстра-пенье, 450–500 г/м²");
+    }
+  });
+});
+
 describe("calculator surcharges", () => {
-  for (const [size, price] of Object.entries({ A6: 2_000, A5: 4_000, A4: 6_000 })) {
+  for (const [size, price] of Object.entries({ A6: 1_000, A5: 2_000, A4: 4_000 })) {
     test(`embroidery ${size}`, () => {
       assert.equal(calculateEmbroideryPrice(size as EmbroiderySizeId), price);
     });
@@ -74,10 +105,10 @@ describe("calculator surcharges", () => {
 
   const threadSurcharges: Record<ThreadColorOptionId, number> = {
     one: 0,
-    "two-three": 390,
-    "four-six": 1_000,
-    "seven-plus": 1_500,
-    unknown: 1_000,
+    "two-three": 250,
+    "four-six": 500,
+    "seven-plus": 700,
+    unknown: 500,
   };
   for (const [option, surcharge] of Object.entries(threadSurcharges)) {
     test(`thread colors ${option}`, () => {
@@ -90,10 +121,9 @@ describe("calculator surcharges", () => {
 });
 
 describe("multi-embroidery pricing", () => {
-  test("one zone", () => assert.equal(calculateMultiEmbroideryPrice(1), 2_000));
-  test("two zones", () => assert.equal(calculateMultiEmbroideryPrice(2), 3_700));
-  test("three zones", () => assert.equal(calculateMultiEmbroideryPrice(3), 5_400));
-  test("five zones", () => assert.equal(calculateMultiEmbroideryPrice(5), 8_800));
+  for (const [zones, price] of [[2, 2_000], [3, 3_000], [5, 5_000], [10, 10_000], [15, 15_000]] as const) {
+    test(`${zones} zones`, () => assert.equal(calculateMultiEmbroideryPrice(zones), price));
+  }
 });
 
 describe("sweatshirt multi-placement configuration", () => {
@@ -112,12 +142,12 @@ describe("zip hoodie multi-placement configuration", () => {
   test("has no center-front zone", () => assert.equal(zones.some(({ id }) => id.startsWith("front-body")), false));
 });
 
-describe("PROJECT_SPEC.md total examples", () => {
+describe("complete order totals", () => {
   const examples: readonly [string, CompleteCalculatorSelection, number][] = [
     [
       "adult premium sweatshirt",
       { ...validAdultSelection, productType: "sweatshirt", embroiderySize: "A5" },
-      10_280,
+      6_980,
     ],
     [
       "child standard T-shirt",
@@ -131,7 +161,7 @@ describe("PROJECT_SPEC.md total examples", () => {
         threadColors: "two-three",
         packaging: "basic",
       },
-      4_380,
+      2_440,
     ],
     [
       "adult premium hoodie",
@@ -140,13 +170,34 @@ describe("PROJECT_SPEC.md total examples", () => {
         embroiderySize: "A4",
         threadColors: "one",
       },
-      14_240,
+      10_690,
     ],
   ];
 
   for (const [name, selection, total] of examples) {
     test(name, () => assert.equal(calculateTotalPreliminaryPrice(selection).total, total));
   }
+
+  test("multi embroidery adds one thousand rubles per selected zone", () => {
+    const selection: CompleteMultiCalculatorSelection = {
+      productType: "zip-hoodie",
+      ageGroup: "adult",
+      qualityLevel: "standard",
+      size: "M",
+      color: "black",
+      packaging: "gift",
+      multiZoneIds: ["front-left-body-1", "front-right-body-1", "back-body-3"],
+    };
+    assert.deepEqual(calculateMultiTotalPreliminaryPrice(selection), {
+      baseProduct: 4_690,
+      embroidery: 3_000,
+      threadColorSurcharge: 0,
+      packaging: 790,
+      total: 8_480,
+      isPreliminary: true,
+      isFromPrice: false,
+    });
+  });
 });
 
 describe("compatibility rules", () => {
@@ -233,7 +284,7 @@ describe("selection validation and estimate flags", () => {
     const selection = { ...validAdultSelection, threadColors: "seven-plus" } as const;
     assert.equal(validateCalculatorSelection(selection).isCompatible, true);
     const price = calculateTotalPreliminaryPrice(selection);
-    assert.equal(price.threadColorSurcharge, 1_500);
+    assert.equal(price.threadColorSurcharge, 700);
     assert.equal(price.isPreliminary, true);
     assert.equal(price.isFromPrice, true);
   });
@@ -242,7 +293,7 @@ describe("selection validation and estimate flags", () => {
     const selection = { ...validAdultSelection, threadColors: "unknown" } as const;
     assert.equal(validateCalculatorSelection(selection).isCompatible, true);
     const price = calculateTotalPreliminaryPrice(selection);
-    assert.equal(price.threadColorSurcharge, 1_000);
+    assert.equal(price.threadColorSurcharge, 500);
     assert.equal(price.isPreliminary, true);
     assert.equal(price.isFromPrice, false);
   });
