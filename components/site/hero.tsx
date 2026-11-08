@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolvePublicAssetPath } from "@/lib/public-assets";
 
 export function Hero() {
   return (
@@ -35,7 +36,7 @@ function HeroComposition() {
     <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-12 lg:grid-rows-[auto_auto] lg:gap-4" aria-label="Путь от рисунка до готовой вышивки">
       <VisualCard title="Оригинальный рисунок" className="lg:col-span-5 lg:mt-10" label="Оригинальный детский рисунок семьи и дома">
         <Image
-          src="/images/original-drawing-v2.jpg"
+          src={resolvePublicAssetPath("/images/original-drawing-v2.jpg")}
           alt="Оригинальный детский рисунок семьи, дома и облаков"
           width={1433}
           height={1011}
@@ -45,7 +46,7 @@ function HeroComposition() {
       </VisualCard>
       <VisualCard title="Отрисовка макета в программе" className="lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:ml-6 lg:w-[calc(100%-1.5rem)]" label="Подготовка макета рисунка для вышивки">
         <Image
-          src="/images/stitch-preview.jpg"
+          src={resolvePublicAssetPath("/images/stitch-preview.jpg")}
           alt="Подготовка детского рисунка к машинной вышивке на планшете"
           width={1920}
           height={2560}
@@ -55,7 +56,7 @@ function HeroComposition() {
       </VisualCard>
       <VisualCard dominant title="Готовая вышивка" className="col-span-2 lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-1" label="Готовое худи с вышивкой детского рисунка">
         <Image
-          src="/images/hero-girl-hoodie.jpg"
+          src={resolvePublicAssetPath("/images/hero-girl-hoodie.jpg")}
           alt="Девочка в худи с вышивкой детского рисунка"
           width={1023}
           height={1537}

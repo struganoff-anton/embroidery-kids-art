@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolvePublicAssetPath } from "@/lib/public-assets";
 
 export function GiftStory() {
   return (
@@ -13,7 +14,7 @@ export function GiftStory() {
 
         <figure className="order-2 overflow-hidden rounded-card border border-line bg-surface lg:col-span-7 lg:col-start-1 lg:row-span-4 lg:row-start-1">
           <Image
-            src="/images/gift/gift-for-dad.jpeg"
+            src={resolvePublicAssetPath("/images/gift/gift-for-dad.jpeg")}
             alt="Мужчина в сером худи с вышитым детским рисунком семьи"
             width={960}
             height={1280}
@@ -42,7 +43,7 @@ export function GiftStory() {
           </div>
           <figure className="order-6 overflow-hidden rounded-card border border-line bg-surface lg:order-1">
             <Image
-              src="/images/gift/gift-for-child.png"
+              src={resolvePublicAssetPath("/images/gift/gift-for-child.png")}
               alt="Ребёнок в жёлтой футболке с вышитым рисунком семьи"
               width={1086}
               height={1448}
