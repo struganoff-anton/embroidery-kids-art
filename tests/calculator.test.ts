@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "node:test";
+import { after, describe, test } from "node:test";
 
 import {
   calculateBaseProductPrice,
@@ -13,6 +13,7 @@ import {
   getAllowedPlacements,
   validateCalculatorSelection,
 } from "../lib/calculator.ts";
+import { resolvePublicAssetPath } from "../lib/public-assets.ts";
 import { ageGroups, materialProfiles, sizes } from "../config/calculator.ts";
 import { multiPlacementConfigs } from "../config/multi-embroidery.ts";
 import type {
@@ -37,6 +38,31 @@ const validAdultSelection: CompleteCalculatorSelection = {
   threadColors: "four-six",
   packaging: "gift",
 };
+
+describe("public asset paths", () => {
+  const originalGitHubPages = process.env.GITHUB_PAGES;
+
+  test("keeps local URLs root-relative in development", () => {
+    delete process.env.GITHUB_PAGES;
+    assert.equal(resolvePublicAssetPath("/images/products/tshirt.jpg"), "/images/products/tshirt.jpg");
+    assert.equal(resolvePublicAssetPath("images/products/tshirt.jpg"), "/images/products/tshirt.jpg");
+  });
+
+  test("adds GitHub Pages base path exactly once", () => {
+    process.env.GITHUB_PAGES = "true";
+    assert.equal(resolvePublicAssetPath("/images/products/tshirt.jpg"), "/embroidery-kids-art/images/products/tshirt.jpg");
+    assert.equal(resolvePublicAssetPath("/embroidery-kids-art/images/products/tshirt.jpg"), "/embroidery-kids-art/images/products/tshirt.jpg");
+    assert.equal(resolvePublicAssetPath("https://example.com/image.png"), "https://example.com/image.png");
+  });
+
+  after(() => {
+    if (originalGitHubPages === undefined) {
+      delete process.env.GITHUB_PAGES;
+    } else {
+      process.env.GITHUB_PAGES = originalGitHubPages;
+    }
+  });
+});
 
 describe("base product prices", () => {
   const expectedPrices = {

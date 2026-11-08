@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  --font-onest: "Onest", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --background: #f6f3ed;
   --surface: #ffffff;
   --foreground: #1d1c1a;

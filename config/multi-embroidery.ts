@@ -1,4 +1,5 @@
-import type { MultiGarmentView, MultiZoneId, ProductTypeId } from "@/types/calculator";
+import { resolvePublicAssetPath } from "../lib/public-assets.ts";
+import type { MultiGarmentView, MultiZoneId, ProductTypeId } from "../types/calculator.ts";
 
 export interface MultiPlacementZone {
   id: MultiZoneId;
@@ -20,8 +21,8 @@ export interface MultiPlacementProductConfig {
 export const multiPlacementConfigs: Partial<Record<ProductTypeId, MultiPlacementProductConfig>> = {
   hoodie: {
     images: {
-      front: "/images/multi/hoodie/front.png",
-      back: "/images/multi/hoodie/back.png",
+      front: resolvePublicAssetPath("/images/multi/hoodie/front.png"),
+      back: resolvePublicAssetPath("/images/multi/hoodie/back.png"),
     },
     zones: [
       { id: "front-body-1", label: "Спереди — грудь слева сверху", view: "front", left: 34.25, top: 26.37, width: 9.5, height: 9.26 },
@@ -43,8 +44,8 @@ export const multiPlacementConfigs: Partial<Record<ProductTypeId, MultiPlacement
   },
   sweatshirt: {
     images: {
-      front: "/images/multi/sweatshirt/front.png",
-      back: "/images/multi/sweatshirt/back.png",
+      front: resolvePublicAssetPath("/images/multi/sweatshirt/front.png"),
+      back: resolvePublicAssetPath("/images/multi/sweatshirt/back.png"),
     },
     imageAspectRatios: {
       front: "1011 / 1555",
@@ -69,8 +70,8 @@ export const multiPlacementConfigs: Partial<Record<ProductTypeId, MultiPlacement
   },
   "zip-hoodie": {
     images: {
-      front: "/images/multi/zip-hoodie/front.png",
-      back: "/images/multi/zip-hoodie/back.png",
+      front: resolvePublicAssetPath("/images/multi/zip-hoodie/front.png"),
+      back: resolvePublicAssetPath("/images/multi/zip-hoodie/back.png"),
     },
     imageAspectRatios: {
       front: "1023 / 1537",

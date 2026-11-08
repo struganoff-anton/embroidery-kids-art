@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { ageGroups, embroideryPlacements, embroiderySizes, materialColors, materialProfiles, messengerUrls, packagingOptions, products, qualityLevels, sizes, threadColorSurchargeOptions } from "@/config/calculator";
 import { multiPlacementConfigs } from "@/config/multi-embroidery";
 import { calculateMultiEmbroideryPrice, calculateMultiTotalPreliminaryPrice, calculateTotalPreliminaryPrice, getAllowedEmbroiderySizes, getAllowedPlacements, validateCalculatorSelection } from "@/lib/calculator";
+import { resolvePublicAssetPath } from "../../lib/public-assets.ts";
 import type { AgeGroupId, CalculatorSelectionState, ColorId, CompleteCalculatorSelection, CompleteMultiCalculatorSelection, EmbroideryMode, EmbroideryPlacementId, EmbroiderySizeId, MultiEmbroiderySelectionState, MultiGarmentView, MultiZoneId, PreliminaryPrice, ProductTypeId } from "@/types/calculator";
 import { MultiPlacementSelector } from "./multi-placement-selector";
 import { OptionCard } from "./option-card";
@@ -21,80 +22,80 @@ const questions = [
   ["Как упаковать заказ?", "Базовая упаковка уже входит в стоимость."],
 ] as const;
 const productImageSources: Record<ProductTypeId, string> = {
-  "t-shirt": "/images/products/tshirt.jpg",
-  sweatshirt: "/images/products/sweatshirt.png",
-  hoodie: "/images/products/hoodie.png",
-  "zip-hoodie": "/images/products/zip-hoodie.png",
+  "t-shirt": resolvePublicAssetPath("/images/products/tshirt.jpg"),
+  sweatshirt: resolvePublicAssetPath("/images/products/sweatshirt.png"),
+  hoodie: resolvePublicAssetPath("/images/products/hoodie.png"),
+  "zip-hoodie": resolvePublicAssetPath("/images/products/zip-hoodie.png"),
 };
 const productColorImageSources: Partial<Record<ProductTypeId, Record<ColorId, string>>> = {
   "t-shirt": {
-    white: "/images/products/tshirt/colors/white.png",
-    "gray-melange": "/images/products/tshirt/colors/gray-melange.png",
-    black: "/images/products/tshirt/colors/black.png",
-    red: "/images/products/tshirt/colors/red.png",
-    blue: "/images/products/tshirt/colors/blue.png",
-    green: "/images/products/tshirt/colors/green.png",
-    yellow: "/images/products/tshirt/colors/yellow.png",
+    white: resolvePublicAssetPath("/images/products/tshirt/colors/white.png"),
+    "gray-melange": resolvePublicAssetPath("/images/products/tshirt/colors/gray-melange.png"),
+    black: resolvePublicAssetPath("/images/products/tshirt/colors/black.png"),
+    red: resolvePublicAssetPath("/images/products/tshirt/colors/red.png"),
+    blue: resolvePublicAssetPath("/images/products/tshirt/colors/blue.png"),
+    green: resolvePublicAssetPath("/images/products/tshirt/colors/green.png"),
+    yellow: resolvePublicAssetPath("/images/products/tshirt/colors/yellow.png"),
   },
   sweatshirt: {
-    white: "/images/products/sweatshirt/colors/sw-white.png",
-    "gray-melange": "/images/products/sweatshirt/colors/sw-gray-melange.png",
-    black: "/images/products/sweatshirt/colors/sw-black.png",
-    red: "/images/products/sweatshirt/colors/sw-red.png",
-    blue: "/images/products/sweatshirt/colors/sw-blue.png",
-    green: "/images/products/sweatshirt/colors/sw-green.png",
-    yellow: "/images/products/sweatshirt/colors/sw-yellow.png",
+    white: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-white.png"),
+    "gray-melange": resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-gray-melange.png"),
+    black: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-black.png"),
+    red: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-red.png"),
+    blue: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-blue.png"),
+    green: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-green.png"),
+    yellow: resolvePublicAssetPath("/images/products/sweatshirt/colors/sw-yellow.png"),
   },
   hoodie: {
-    white: "/images/products/hoodie/colors/h-white.png",
-    "gray-melange": "/images/products/hoodie/colors/h-gray-melange.png",
-    black: "/images/products/hoodie/colors/h-black.png",
-    red: "/images/products/hoodie/colors/h-red.png",
-    blue: "/images/products/hoodie/colors/h-blue.png",
-    green: "/images/products/hoodie/colors/h-green.png",
-    yellow: "/images/products/hoodie/colors/h-yellow.png",
+    white: resolvePublicAssetPath("/images/products/hoodie/colors/h-white.png"),
+    "gray-melange": resolvePublicAssetPath("/images/products/hoodie/colors/h-gray-melange.png"),
+    black: resolvePublicAssetPath("/images/products/hoodie/colors/h-black.png"),
+    red: resolvePublicAssetPath("/images/products/hoodie/colors/h-red.png"),
+    blue: resolvePublicAssetPath("/images/products/hoodie/colors/h-blue.png"),
+    green: resolvePublicAssetPath("/images/products/hoodie/colors/h-green.png"),
+    yellow: resolvePublicAssetPath("/images/products/hoodie/colors/h-yellow.png"),
   },
   "zip-hoodie": {
-    white: "/images/products/zip-hoodie/colors/z-white.png",
-    "gray-melange": "/images/products/zip-hoodie/colors/z-gray-melange.png",
-    black: "/images/products/zip-hoodie/colors/z-black.png",
-    red: "/images/products/zip-hoodie/colors/z-red.png",
-    blue: "/images/products/zip-hoodie/colors/z-blue.png",
-    green: "/images/products/zip-hoodie/colors/z-green.png",
-    yellow: "/images/products/zip-hoodie/colors/z-yellow.png",
+    white: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-white.png"),
+    "gray-melange": resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-gray-melange.png"),
+    black: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-black.png"),
+    red: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-red.png"),
+    blue: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-blue.png"),
+    green: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-green.png"),
+    yellow: resolvePublicAssetPath("/images/products/zip-hoodie/colors/z-yellow.png"),
   },
 };
 const placementImageSources: Partial<Record<ProductTypeId, Partial<Record<EmbroideryPlacementId, string>>>> = {
   "t-shirt": {
-    chest: "/images/placements/tshirt/chest.png",
-    back: "/images/placements/tshirt/back.png",
-    sleeve: "/images/placements/tshirt/sleeve.png",
+    chest: resolvePublicAssetPath("/images/placements/tshirt/chest.png"),
+    back: resolvePublicAssetPath("/images/placements/tshirt/back.png"),
+    sleeve: resolvePublicAssetPath("/images/placements/tshirt/sleeve.png"),
   },
   sweatshirt: {
-    chest: "/images/placements/sweatshirt/chest.png",
-    back: "/images/placements/sweatshirt/back.png",
-    sleeve: "/images/placements/sweatshirt/sleeve.png",
+    chest: resolvePublicAssetPath("/images/placements/sweatshirt/chest.png"),
+    back: resolvePublicAssetPath("/images/placements/sweatshirt/back.png"),
+    sleeve: resolvePublicAssetPath("/images/placements/sweatshirt/sleeve.png"),
   },
   hoodie: {
-    chest: "/images/placements/hoodie/chest.png",
-    back: "/images/placements/hoodie/back.png",
-    sleeve: "/images/placements/hoodie/sleeve.png",
+    chest: resolvePublicAssetPath("/images/placements/hoodie/chest.png"),
+    back: resolvePublicAssetPath("/images/placements/hoodie/back.png"),
+    sleeve: resolvePublicAssetPath("/images/placements/hoodie/sleeve.png"),
   },
   "zip-hoodie": {
-    "zip-left": "/images/placements/zip-hoodie/left-chest.png",
-    "zip-right": "/images/placements/zip-hoodie/right-chest.png",
-    back: "/images/placements/zip-hoodie/back.png",
-    sleeve: "/images/placements/zip-hoodie/sleeve.png",
+    "zip-left": resolvePublicAssetPath("/images/placements/zip-hoodie/left-chest.png"),
+    "zip-right": resolvePublicAssetPath("/images/placements/zip-hoodie/right-chest.png"),
+    back: resolvePublicAssetPath("/images/placements/zip-hoodie/back.png"),
+    sleeve: resolvePublicAssetPath("/images/placements/zip-hoodie/sleeve.png"),
   },
 };
 const multiPlacementPreviewImageSources: Partial<Record<ProductTypeId, string>> = {
-  hoodie: "/images/placements/multi/hoodie/multi.jpeg",
-  sweatshirt: "/images/placements/multi/sweatshirt/multi.jpeg",
-  "zip-hoodie": "/images/placements/multi/zip-hoodie/multi.jpeg",
+  hoodie: resolvePublicAssetPath("/images/placements/multi/hoodie/multi.jpeg"),
+  sweatshirt: resolvePublicAssetPath("/images/placements/multi/sweatshirt/multi.jpeg"),
+  "zip-hoodie": resolvePublicAssetPath("/images/placements/multi/zip-hoodie/multi.jpeg"),
 };
 const packagingImageSources: Record<(typeof packagingOptions)[number]["id"], string> = {
-  basic: "/images/packaging/basic.png",
-  gift: "/images/packaging/gift.png",
+  basic: resolvePublicAssetPath("/images/packaging/basic.png"),
+  gift: resolvePublicAssetPath("/images/packaging/gift.png"),
 };
 
 const generateOrderNumber = () => `EMB-${Math.floor(1000 + Math.random() * 9000)}`;
