@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ageGroups, embroideryPlacements, embroiderySizes, materialColors, materialProfiles, messengerUrls, packagingOptions, products, qualityLevels, sizes, threadColorSurchargeOptions } from "@/config/calculator";
 import { multiPlacementConfigs } from "@/config/multi-embroidery";
 import { calculateMultiEmbroideryPrice, calculateMultiTotalPreliminaryPrice, calculateTotalPreliminaryPrice, getAllowedEmbroiderySizes, getAllowedPlacements, validateCalculatorSelection } from "@/lib/calculator";
+import { scheduleCalculatorStepScroll } from "../../lib/calculator-scroll.ts";
 import { resolvePublicAssetPath } from "../../lib/public-assets.ts";
 import type { AgeGroupId, CalculatorSelectionState, ColorId, CompleteCalculatorSelection, CompleteMultiCalculatorSelection, EmbroideryMode, EmbroideryPlacementId, EmbroiderySizeId, MultiEmbroiderySelectionState, MultiGarmentView, MultiZoneId, PreliminaryPrice, ProductTypeId } from "@/types/calculator";
 import { MultiPlacementSelector } from "./multi-placement-selector";
@@ -114,6 +115,17 @@ export function Calculator() {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
+  const stepContainerRef = useRef<HTMLDivElement>(null);
+  const stepKey = `${step}:${multiSelectorOpen}`;
+  const previousStepKey = useRef(stepKey);
+  useLayoutEffect(() => {
+    // No scrolling on mount or parameter changes, including view/zone selection.
+    if (previousStepKey.current === stepKey) return;
+    previousStepKey.current = stepKey;
+    const heading = stepContainerRef.current?.querySelector<HTMLElement>("[data-calculator-step-heading]");
+    if (!heading) return;
+    return scheduleCalculatorStepScroll(heading, document.querySelector<HTMLElement>("[data-site-header]"));
+  }, [stepKey]);
   const patch = (value: Partial<CalculatorSelectionState>) => setSelection((current) => ({ ...current, ...value }));
 
   const selectProduct = (productType: ProductTypeId) => {
@@ -183,12 +195,12 @@ export function Calculator() {
   };
 
   return (
-    <section className="mx-auto w-full max-w-6xl" aria-label="Калькулятор стоимости">
+    <section className="mx-auto w-full max-w-6xl" style={{ overflowAnchor: "none" }} aria-label="Калькулятор стоимости">
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 rounded-container border border-line bg-surface p-4 shadow-surface min-[360px]:p-5 sm:p-8">
+        <div ref={stepContainerRef} className="min-w-0 rounded-container border border-line bg-surface p-4 shadow-surface min-[360px]:p-5 sm:p-8">
           {step < TOTAL_STEPS ? <>
             <ProgressBar step={multiSelectorOpen ? 7 : step + 1} total={TOTAL_STEPS} />
-            <header className="mb-7 mt-8"><h2 className="text-[clamp(1.4rem,6vw,1.875rem)] font-semibold leading-tight tracking-tight">{multiSelectorOpen ? "Выберите места для рисунков" : questions[step][0]}</h2><p className="mt-2 text-sm leading-6 text-muted sm:text-base">{multiSelectorOpen ? "Можно выбрать несколько зон. Каждый рисунок — до формата A6." : questions[step][1]}</p></header>
+            <header className="mb-7 mt-8"><h2 data-calculator-step-heading tabIndex={-1} className="outline-none text-[clamp(1.4rem,6vw,1.875rem)] font-semibold leading-tight tracking-tight">{multiSelectorOpen ? "Выберите места для рисунков" : questions[step][0]}</h2><p className="mt-2 text-sm leading-6 text-muted sm:text-base">{multiSelectorOpen ? "Можно выбрать несколько зон. Каждый рисунок — до формата A6." : questions[step][1]}</p></header>
             {multiSelectorOpen && multiConfig ? <MultiPlacementSelector config={multiConfig} productLabel={labelOf(products, selection.productType) ?? "Изделие"} view={multiView} selectedZoneIds={multiSelection.zoneIds} embroideryPrice={calculateMultiEmbroideryPrice(multiSelection.zoneIds.length)} onViewChange={setMultiView} onToggleZone={toggleMultiZone} /> : <Step step={step} selection={selection} embroideryMode={multiSelection.mode} patch={patch} selectProduct={selectProduct} selectAgeGroup={selectAgeGroup} selectPlacement={selectPlacement} selectMultiPlacement={selectMultiPlacement} />}
             <Navigation step={multiSelectorOpen ? 6 : step} canContinue={canContinue} onBack={goBack} onContinue={continueFlow} />
           </> : finalSelection && price && orderNumber ? <Summary selection={finalSelection} multiSelection={finalMultiSelection ? multiSelection : undefined} orderNumber={orderNumber} price={price} message={message} copyStatus={copyStatus} onCopy={copyOrder} onBack={() => setStep(8)} /> : null}
@@ -321,7 +333,7 @@ function Summary({ selection, multiSelection, orderNumber, price, message, copyS
   const rows = isMulti
     ? [...sharedRows, ["Размещение", "несколько рисунков"], ["Количество рисунков", String(multiSelection?.zoneIds.length ?? selection.multiZoneIds.length)], ["Размер каждой вышивки", "до A6"], ["Упаковка", labelOf(packagingOptions, selection.packaging)]]
     : [...sharedRows, ["Размещение", labelOf(embroideryPlacements, selection.placement)], ["Размер вышивки", labelOf(embroiderySizes, selection.embroiderySize)], ["Количество цветов", labelOf(threadColorSurchargeOptions, selection.threadColors)], ["Упаковка", labelOf(packagingOptions, selection.packaging)]];
-  return <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Заявка {orderNumber}</p><h2 className="mt-2 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">Ваше изделие готово к оформлению</h2>
+  return <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Заявка {orderNumber}</p><h2 data-calculator-step-heading tabIndex={-1} className="outline-none mt-2 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">Ваше изделие готово к оформлению</h2>
     <section className="mt-5" aria-labelledby="selected-parameters"><h3 id="selected-parameters" className="mb-2 text-sm font-semibold">Выбранные параметры</h3><dl className="divide-y divide-line rounded-card border border-line bg-surface px-4">{rows.map(([label, value]) => <div key={label} className="flex justify-between gap-3 py-2.5 text-sm"><dt className="text-muted">{label}</dt><dd className="text-right font-medium">{value}</dd></div>)}</dl></section>
     <section className="mt-5" aria-labelledby="price-breakdown"><h3 id="price-breakdown" className="mb-2 text-sm font-semibold">Расчёт стоимости</h3><div className="rounded-card border border-[#f3c9c2] bg-accent-light p-4"><PriceLine label="Изделие" value={price.baseProduct} /><PriceLine label="Вышивка" value={price.embroidery} />{!isMulti ? <PriceLine label="Доплата за цвета" value={price.threadColorSurcharge} /> : null}<PriceLine label="Упаковка" value={price.packaging} /><div className="mt-3 flex items-end justify-between gap-3 border-t border-[#eeb9b0] pt-3"><span className="font-semibold">Предварительная стоимость</span><strong className="text-right text-xl font-semibold sm:text-2xl">{price.isFromPrice ? "от " : ""}{formatPrice(price.total)}</strong></div></div></section>
     {!isMulti && selection.threadColors === "seven-plus" ? <Notice>Точная стоимость зависит от рисунка и будет рассчитана индивидуально.</Notice> : null}{!isMulti && selection.threadColors === "unknown" ? <Notice>Использована предварительная доплата 500 ₽. Точное количество цветов определим после получения рисунка.</Notice> : null}
