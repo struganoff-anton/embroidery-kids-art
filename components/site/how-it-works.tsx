@@ -14,7 +14,7 @@ export function HowItWorks() {
             {steps.map(([title, copy], index) => <li key={title} className="border-t border-line pt-4"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-accent-secondary">0{index + 1}</span><StepIcon index={index} /></div><h3 className="mt-3 font-semibold leading-snug">{title}</h3><p className="mt-2 text-sm leading-6 text-muted">{copy}</p></li>)}
           </ol>
         </div>
-        <span id="examples" className="scroll-mt-20" aria-hidden="true" /><span id="products" className="scroll-mt-20" aria-hidden="true" /><span id="faq" className="scroll-mt-20" aria-hidden="true" />
+        <span id="examples" className="scroll-mt-20" aria-hidden="true" /><span id="products" className="scroll-mt-20" aria-hidden="true" />
       </div>
     </section>
   );

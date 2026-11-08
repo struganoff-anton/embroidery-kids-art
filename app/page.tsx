@@ -1,6 +1,10 @@
 import { Calculator } from "@/components/calculator/calculator";
+import { FaqSection } from "@/components/site/faq-section";
+import { FinalCta } from "@/components/site/final-cta";
+import { GiftStory } from "@/components/site/gift-story";
 import { Hero } from "@/components/site/hero";
 import { HowItWorks } from "@/components/site/how-it-works";
+import { ProductValues } from "@/components/site/product-values";
 import { SiteHeader } from "@/components/site/site-header";
 
 export default function Home() {
@@ -18,6 +22,10 @@ export default function Home() {
           </header>
           <Calculator />
         </section>
+        <ProductValues />
+        <GiftStory />
+        <FaqSection />
+        <FinalCta />
       </main>
     </>
   );
